@@ -48,13 +48,14 @@ import {
 
 // ─── Replace these values with your Firebase project config ───
 const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-  databaseURL: "https://YOUR_PROJECT_ID-default-rtdb.firebaseio.com",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_PROJECT_ID.appspot.com",
-  messagingSenderId: "YOUR_SENDER_ID",
-  appId: "YOUR_APP_ID",
+  apiKey: "AIzaSyCOTd4ixSy37In5JyRA2sovp5MEx65u8hM",
+  authDomain: "clothingjishop.firebaseapp.com",
+  databaseURL: "https://clothingjishop-default-rtdb.firebaseio.com",
+  projectId: "clothingjishop",
+  storageBucket: "clothingjishop.firebasestorage.app",
+  messagingSenderId: "369318489742",
+  appId: "1:369318489742:web:cc792deb414e29c2eb23df",
+  measurementId: "G-F3FPNBVJS4"
 };
 // ──────────────────────────────────────────────────────────────
 
