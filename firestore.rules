@@ -1,0 +1,92 @@
+// ============================================================
+// firestore.rules — Firestore Security Rules
+//
+// CRITICAL: These rules enforce admin access server-side.
+// The client-side ADMIN_UID check in app.js is a UX shortcut
+// only — these rules are the real security boundary.
+// ============================================================
+
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ── Helpers ──────────────────────────────────────────────
+    function isAuth() {
+      return request.auth != null;
+    }
+
+    // Admin is identified by their Firebase UID alone.
+    // Never use email or custom claims without server-side
+    // verification; UID is immutable and set by Firebase Auth.
+    function isAdmin() {
+      return isAuth() && request.auth.uid == "pZ16DY2C8cV2P4S4wd7Z4B6qBKH3";
+    }
+
+    function isOwner(uid) {
+      return isAuth() && request.auth.uid == uid;
+    }
+
+    function notBlocked() {
+      return !exists(/databases/$(database)/documents/users/$(request.auth.uid))
+        || !get(/databases/$(database)/documents/users/$(request.auth.uid)).data.blocked;
+    }
+
+    // ── Products ─────────────────────────────────────────────
+    match /products/{productId} {
+      // Anyone (authenticated or not) can read products
+      allow read: if true;
+      // Only admin can write products
+      allow create, update, delete: if isAdmin();
+    }
+
+    // ── Users ────────────────────────────────────────────────
+    match /users/{userId} {
+      // User can read/update their own doc; admin can read all
+      allow read: if isOwner(userId) || isAdmin();
+      // Users can only create their own doc; admin can update any
+      allow create: if isOwner(userId);
+      allow update: if isAdmin()
+        || (isOwner(userId) && !("blocked" in request.resource.data));
+      // Only admin can delete user docs
+      allow delete: if isAdmin();
+    }
+
+    // ── Carts ────────────────────────────────────────────────
+    match /carts/{cartId} {
+      allow read, write: if isAuth()
+        && request.auth.uid == resource.data.userId
+        && notBlocked();
+      // Allow create (resource doesn't exist yet for create)
+      allow create: if isAuth()
+        && request.auth.uid == request.resource.data.userId
+        && notBlocked();
+    }
+
+    // ── Wishlist ─────────────────────────────────────────────
+    match /wishlist/{wishlistId} {
+      allow read: if isAuth()
+        && (resource == null || request.auth.uid == resource.data.userId);
+      allow create: if isAuth()
+        && request.auth.uid == request.resource.data.userId
+        && notBlocked();
+      allow delete: if isAuth()
+        && request.auth.uid == resource.data.userId;
+      allow update: if false; // wishlist items are create/delete only
+    }
+
+    // ── Orders ───────────────────────────────────────────────
+    match /orders/{orderId} {
+      // Users can read their own orders; admin reads all
+      allow read: if isAdmin()
+        || (isAuth() && request.auth.uid == resource.data.userId);
+      // Users can create orders for themselves
+      allow create: if isAuth()
+        && request.auth.uid == request.resource.data.userId
+        && notBlocked();
+      // Only admin can update order status
+      allow update: if isAdmin();
+      // Nobody deletes orders
+      allow delete: if false;
+    }
+  }
+}

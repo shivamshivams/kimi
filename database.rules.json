@@ -1,0 +1,17 @@
+{
+  "rules": {
+    "settings": {
+      "footer": {
+        // Public read so the storefront footer loads without auth
+        ".read": true,
+        // Only admin UID can write store settings
+        ".write": "auth != null && auth.uid === 'pZ16DY2C8cV2P4S4wd7Z4B6qBKH3'"
+      }
+    },
+    "$other": {
+      // All other top-level nodes require admin access
+      ".read": "auth != null && auth.uid === 'pZ16DY2C8cV2P4S4wd7Z4B6qBKH3'",
+      ".write": "auth != null && auth.uid === 'pZ16DY2C8cV2P4S4wd7Z4B6qBKH3'"
+    }
+  }
+}

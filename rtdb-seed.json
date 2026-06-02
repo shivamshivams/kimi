@@ -1,0 +1,14 @@
+{
+  "_comment": "Seed data for Firebase Realtime Database — import via Firebase Console or firebase CLI",
+
+  "settings": {
+    "footer": {
+      "shopName": "ThreadsLux",
+      "tagline": "Curated fashion, delivered.",
+      "copyright": "© 2024 ThreadsLux. All rights reserved.",
+      "address": "123 Fashion Street, Bandra West, Mumbai 400050",
+      "phone": "+91 98765 43210",
+      "email": "hello@threadslux.com"
+    }
+  }
+}

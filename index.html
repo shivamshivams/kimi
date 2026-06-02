@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ThreadsLux — Fashion Store</title>
+  <meta name="description" content="Premium clothing store with curated fashion collections." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@400;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════
+     TOAST NOTIFICATION
+═══════════════════════════════════════ -->
+<div id="toast-container"></div>
+
+<!-- ═══════════════════════════════════════
+     LOADING OVERLAY
+═══════════════════════════════════════ -->
+<div id="loading-overlay" class="loading-overlay">
+  <div class="loader-ring"></div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     AUTH SECTION
+═══════════════════════════════════════ -->
+<section id="auth-section" class="auth-section hidden">
+  <div class="auth-container">
+    <div class="auth-brand">
+      <span class="brand-icon">✦</span>
+      <h1 class="brand-name">ThreadsLux</h1>
+      <p class="brand-tagline">Curated fashion, delivered.</p>
+    </div>
+
+    <!-- Login Form -->
+    <div id="login-form" class="auth-form">
+      <h2>Welcome back</h2>
+      <p class="auth-subtitle">Sign in to your account</p>
+      <div class="form-group">
+        <label for="login-email">Email</label>
+        <input type="email" id="login-email" placeholder="you@example.com" autocomplete="email" />
+      </div>
+      <div class="form-group">
+        <label for="login-password">Password</label>
+        <div class="password-wrap">
+          <input type="password" id="login-password" placeholder="••••••••" autocomplete="current-password" />
+          <button type="button" class="toggle-pw" data-target="login-password">👁</button>
+        </div>
+      </div>
+      <button class="btn btn-primary btn-full" id="btn-login">Sign In</button>
+      <button class="btn btn-google btn-full" id="btn-google-login">
+        <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" width="20" />
+        Continue with Google
+      </button>
+      <p class="auth-switch">Don't have an account? <a href="#" id="show-register">Create one</a></p>
+    </div>
+
+    <!-- Register Form -->
+    <div id="register-form" class="auth-form hidden">
+      <h2>Create account</h2>
+      <p class="auth-subtitle">Start shopping today</p>
+      <div class="form-group">
+        <label for="reg-name">Full Name</label>
+        <input type="text" id="reg-name" placeholder="Jane Doe" autocomplete="name" />
+      </div>
+      <div class="form-group">
+        <label for="reg-email">Email</label>
+        <input type="email" id="reg-email" placeholder="you@example.com" autocomplete="email" />
+      </div>
+      <div class="form-group">
+        <label for="reg-password">Password</label>
+        <div class="password-wrap">
+          <input type="password" id="reg-password" placeholder="••••••••" autocomplete="new-password" />
+          <button type="button" class="toggle-pw" data-target="reg-password">👁</button>
+        </div>
+      </div>
+      <button class="btn btn-primary btn-full" id="btn-register">Create Account</button>
+      <button class="btn btn-google btn-full" id="btn-google-register">
+        <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" width="20" />
+        Sign up with Google
+      </button>
+      <p class="auth-switch">Already have an account? <a href="#" id="show-login">Sign in</a></p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════
+     USER APP
+═══════════════════════════════════════ -->
+<div id="user-app" class="app-shell hidden">
+
+  <!-- Top Header -->
+  <header class="app-header">
+    <div class="header-inner">
+      <button class="header-menu-btn" id="menu-toggle" aria-label="Menu">☰</button>
+      <a class="header-brand" href="#" data-nav="home">
+        <span class="brand-icon-sm">✦</span> ThreadsLux
+      </a>
+      <div class="header-search">
+        <input type="search" id="search-input" placeholder="Search clothes…" autocomplete="off" />
+        <button class="search-btn" id="search-btn">🔍</button>
+      </div>
+      <nav class="header-actions">
+        <button class="icon-btn" data-nav="wishlist" aria-label="Wishlist">
+          ♡ <span class="badge" id="wishlist-badge">0</span>
+        </button>
+        <button class="icon-btn" data-nav="cart" aria-label="Cart">
+          🛒 <span class="badge" id="cart-badge">0</span>
+        </button>
+        <button class="icon-btn" data-nav="profile" aria-label="Profile">👤</button>
+        <button class="btn btn-ghost btn-sm" id="btn-logout-user">Logout</button>
+        <button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme">🌙</button>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Side Drawer (mobile) -->
+  <div class="drawer-overlay hidden" id="drawer-overlay"></div>
+  <nav class="side-drawer hidden" id="side-drawer">
+    <div class="drawer-header">
+      <span class="brand-icon-sm">✦</span> ThreadsLux
+      <button class="drawer-close" id="drawer-close">✕</button>
+    </div>
+    <ul class="drawer-nav">
+      <li><a href="#" data-nav="home">🏠 Home</a></li>
+      <li><a href="#" data-nav="products">👗 Products</a></li>
+      <li><a href="#" data-nav="cart">🛒 Cart</a></li>
+      <li><a href="#" data-nav="wishlist">♡ Wishlist</a></li>
+      <li><a href="#" data-nav="orders">📦 Orders</a></li>
+      <li><a href="#" data-nav="profile">👤 Profile</a></li>
+    </ul>
+    <button class="btn btn-ghost btn-sm drawer-logout" id="btn-logout-drawer">Logout</button>
+  </nav>
+
+  <!-- Category Bar -->
+  <div class="category-bar" id="category-bar">
+    <button class="cat-btn active" data-cat="all">All</button>
+    <button class="cat-btn" data-cat="men">Men</button>
+    <button class="cat-btn" data-cat="women">Women</button>
+    <button class="cat-btn" data-cat="kids">Kids</button>
+    <button class="cat-btn" data-cat="accessories">Accessories</button>
+    <button class="cat-btn" data-cat="sale">🔥 Sale</button>
+  </div>
+
+  <!-- Pages Container -->
+  <main class="pages-container">
+
+    <!-- HOME PAGE -->
+    <div id="page-home" class="page active">
+      <div class="hero-banner">
+        <div class="hero-content">
+          <span class="hero-label">New Collection 2024</span>
+          <h1 class="hero-title">Style That<br/><em>Speaks</em></h1>
+          <p class="hero-sub">Curated pieces for every occasion.</p>
+          <button class="btn btn-primary btn-lg" data-nav="products">Shop Now →</button>
+        </div>
+        <div class="hero-image">
+          <div class="hero-img-placeholder">👗</div>
+        </div>
+      </div>
+
+      <section class="section">
+        <div class="section-header">
+          <h2>Featured Products</h2>
+          <a href="#" data-nav="products" class="see-all">See All</a>
+        </div>
+        <div class="products-grid" id="featured-products"></div>
+      </section>
+
+      <section class="section banner-grid">
+        <div class="promo-card promo-men" data-nav="products" data-cat="men">
+          <div class="promo-label">Men's Collection</div>
+          <div class="promo-title">Urban Style</div>
+        </div>
+        <div class="promo-card promo-women" data-nav="products" data-cat="women">
+          <div class="promo-label">Women's Collection</div>
+          <div class="promo-title">Elegant Looks</div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-header">
+          <h2>New Arrivals</h2>
+          <a href="#" data-nav="products" class="see-all">See All</a>
+        </div>
+        <div class="products-grid" id="new-arrivals"></div>
+      </section>
+    </div>
+
+    <!-- PRODUCTS PAGE -->
+    <div id="page-products" class="page hidden">
+      <div class="page-toolbar">
+        <h2 id="products-title">All Products</h2>
+        <div class="toolbar-right">
+          <select id="sort-select" class="select-input">
+            <option value="default">Sort: Default</option>
+            <option value="price-asc">Price: Low→High</option>
+            <option value="price-desc">Price: High→Low</option>
+            <option value="newest">Newest</option>
+          </select>
+        </div>
+      </div>
+      <div class="products-grid" id="all-products-grid"></div>
+      <div id="products-empty" class="empty-state hidden">
+        <div class="empty-icon">🔍</div>
+        <p>No products found</p>
+      </div>
+    </div>
+
+    <!-- PRODUCT DETAIL PAGE -->
+    <div id="page-product-detail" class="page hidden">
+      <button class="back-btn" id="back-from-detail">← Back</button>
+      <div class="product-detail-container" id="product-detail-content"></div>
+    </div>
+
+    <!-- CART PAGE -->
+    <div id="page-cart" class="page hidden">
+      <h2 class="page-title">Shopping Cart</h2>
+      <div class="cart-layout">
+        <div class="cart-items-list" id="cart-items-list"></div>
+        <div class="cart-summary" id="cart-summary"></div>
+      </div>
+      <div id="cart-empty" class="empty-state hidden">
+        <div class="empty-icon">🛒</div>
+        <p>Your cart is empty</p>
+        <button class="btn btn-primary" data-nav="products">Start Shopping</button>
+      </div>
+    </div>
+
+    <!-- CHECKOUT PAGE -->
+    <div id="page-checkout" class="page hidden">
+      <button class="back-btn" id="back-from-checkout">← Back to Cart</button>
+      <h2 class="page-title">Checkout</h2>
+      <div class="checkout-layout">
+        <form class="checkout-form" id="checkout-form">
+          <div class="form-section">
+            <h3>Shipping Information</h3>
+            <div class="form-row">
+              <div class="form-group"><label>First Name</label><input type="text" id="co-fname" required /></div>
+              <div class="form-group"><label>Last Name</label><input type="text" id="co-lname" required /></div>
+            </div>
+            <div class="form-group"><label>Email</label><input type="email" id="co-email" required /></div>
+            <div class="form-group"><label>Phone</label><input type="tel" id="co-phone" required /></div>
+            <div class="form-group"><label>Address</label><input type="text" id="co-address" required /></div>
+            <div class="form-row">
+              <div class="form-group"><label>City</label><input type="text" id="co-city" required /></div>
+              <div class="form-group"><label>Postal Code</label><input type="text" id="co-zip" required /></div>
+            </div>
+            <div class="form-group"><label>Country</label><input type="text" id="co-country" value="India" required /></div>
+          </div>
+          <div class="form-section">
+            <h3>Payment Method</h3>
+            <div class="payment-options">
+              <label class="payment-option">
+                <input type="radio" name="payment" value="cod" checked /> Cash on Delivery
+              </label>
+              <label class="payment-option">
+                <input type="radio" name="payment" value="upi" /> UPI
+              </label>
+              <label class="payment-option">
+                <input type="radio" name="payment" value="card" /> Credit/Debit Card
+              </label>
+            </div>
+          </div>
+          <button type="submit" class="btn btn-primary btn-full btn-lg">Place Order 🎉</button>
+        </form>
+        <div class="checkout-summary" id="checkout-summary"></div>
+      </div>
+    </div>
+
+    <!-- WISHLIST PAGE -->
+    <div id="page-wishlist" class="page hidden">
+      <h2 class="page-title">My Wishlist</h2>
+      <div class="products-grid" id="wishlist-grid"></div>
+      <div id="wishlist-empty" class="empty-state hidden">
+        <div class="empty-icon">♡</div>
+        <p>Your wishlist is empty</p>
+        <button class="btn btn-primary" data-nav="products">Discover Products</button>
+      </div>
+    </div>
+
+    <!-- ORDERS PAGE -->
+    <div id="page-orders" class="page hidden">
+      <h2 class="page-title">My Orders</h2>
+      <div id="orders-list"></div>
+      <div id="orders-empty" class="empty-state hidden">
+        <div class="empty-icon">📦</div>
+        <p>No orders yet</p>
+        <button class="btn btn-primary" data-nav="products">Start Shopping</button>
+      </div>
+    </div>
+
+    <!-- PROFILE PAGE -->
+    <div id="page-profile" class="page hidden">
+      <h2 class="page-title">My Profile</h2>
+      <div class="profile-container">
+        <div class="profile-card">
+          <div class="profile-avatar" id="profile-avatar">👤</div>
+          <div class="profile-info">
+            <h3 id="profile-name">Loading…</h3>
+            <p id="profile-email">—</p>
+          </div>
+        </div>
+        <form class="profile-form" id="profile-form">
+          <div class="form-group"><label>Display Name</label><input type="text" id="pf-name" /></div>
+          <div class="form-group"><label>Phone</label><input type="tel" id="pf-phone" /></div>
+          <div class="form-group"><label>Address</label><input type="text" id="pf-address" /></div>
+          <button type="submit" class="btn btn-primary">Save Changes</button>
+        </form>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Bottom Navigation (mobile) -->
+  <nav class="bottom-nav">
+    <button class="bottom-nav-item active" data-nav="home">
+      <span class="nav-icon">🏠</span><span class="nav-label">Home</span>
+    </button>
+    <button class="bottom-nav-item" data-nav="products">
+      <span class="nav-icon">👗</span><span class="nav-label">Shop</span>
+    </button>
+    <button class="bottom-nav-item" data-nav="cart">
+      <span class="nav-icon">🛒</span>
+      <span class="badge" id="cart-badge-bottom">0</span>
+      <span class="nav-label">Cart</span>
+    </button>
+    <button class="bottom-nav-item" data-nav="wishlist">
+      <span class="nav-icon">♡</span><span class="nav-label">Wishlist</span>
+    </button>
+    <button class="bottom-nav-item" data-nav="profile">
+      <span class="nav-icon">👤</span><span class="nav-label">Me</span>
+    </button>
+  </nav>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div class="footer-col">
+        <h4 class="footer-brand" id="footer-shop-name">ThreadsLux</h4>
+        <p id="footer-tagline">Premium fashion for everyone.</p>
+      </div>
+      <div class="footer-col">
+        <h5>Contact</h5>
+        <p id="footer-address">123 Fashion Street, Mumbai</p>
+        <p id="footer-phone">+91 98765 43210</p>
+        <p id="footer-email-display">hello@threadslux.com</p>
+      </div>
+      <div class="footer-col">
+        <h5>Quick Links</h5>
+        <ul class="footer-links">
+          <li><a href="#" data-nav="home">Home</a></li>
+          <li><a href="#" data-nav="products">Products</a></li>
+          <li><a href="#" data-nav="orders">Orders</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p id="footer-copyright">© 2024 ThreadsLux. All rights reserved.</p>
+    </div>
+  </footer>
+
+</div><!-- /user-app -->
+
+
+<!-- ═══════════════════════════════════════
+     ADMIN DASHBOARD
+═══════════════════════════════════════ -->
+<div id="admin-app" class="app-shell admin-shell hidden">
+
+  <!-- Admin Header -->
+  <header class="admin-header">
+    <div class="admin-header-inner">
+      <button class="header-menu-btn" id="admin-menu-toggle">☰</button>
+      <div class="admin-brand">
+        <span class="brand-icon-sm">✦</span>
+        <span>ThreadsLux <em>Admin</em></span>
+      </div>
+      <div class="admin-header-actions">
+        <button class="theme-toggle" id="admin-theme-toggle" aria-label="Toggle theme">🌙</button>
+        <span class="admin-user-badge">Admin</span>
+        <button class="btn btn-ghost btn-sm" id="btn-logout-admin">Logout</button>
+      </div>
+    </div>
+  </header>
+
+  <div class="admin-layout">
+    <!-- Sidebar -->
+    <aside class="admin-sidebar" id="admin-sidebar">
+      <nav class="admin-nav">
+        <a href="#" class="admin-nav-item active" data-admin-nav="dashboard">
+          <span>📊</span> Dashboard
+        </a>
+        <a href="#" class="admin-nav-item" data-admin-nav="products">
+          <span>📦</span> Products
+        </a>
+        <a href="#" class="admin-nav-item" data-admin-nav="orders">
+          <span>🛍</span> Orders
+        </a>
+        <a href="#" class="admin-nav-item" data-admin-nav="users">
+          <span>👥</span> Users
+        </a>
+        <a href="#" class="admin-nav-item" data-admin-nav="settings">
+          <span>⚙️</span> Settings
+        </a>
+      </nav>
+    </aside>
+
+    <!-- Admin Pages -->
+    <main class="admin-main">
+
+      <!-- DASHBOARD -->
+      <div id="admin-page-dashboard" class="admin-page active">
+        <div class="admin-page-header">
+          <h2>Dashboard</h2>
+          <button class="btn btn-sm btn-secondary" id="refresh-dashboard">↻ Refresh</button>
+        </div>
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-icon">👥</div>
+            <div class="stat-info">
+              <div class="stat-value" id="stat-users">—</div>
+              <div class="stat-label">Total Users</div>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon">👗</div>
+            <div class="stat-info">
+              <div class="stat-value" id="stat-products">—</div>
+              <div class="stat-label">Products</div>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon">🛍</div>
+            <div class="stat-info">
+              <div class="stat-value" id="stat-orders">—</div>
+              <div class="stat-label">Orders</div>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon">💰</div>
+            <div class="stat-info">
+              <div class="stat-value" id="stat-revenue">—</div>
+              <div class="stat-label">Revenue</div>
+            </div>
+          </div>
+        </div>
+        <div class="recent-section">
+          <h3>Recent Orders</h3>
+          <div class="table-wrap">
+            <table class="data-table" id="recent-orders-table">
+              <thead><tr><th>Order ID</th><th>Customer</th><th>Amount</th><th>Status</th><th>Date</th></tr></thead>
+              <tbody id="recent-orders-body"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- PRODUCTS MANAGEMENT -->
+      <div id="admin-page-products" class="admin-page hidden">
+        <div class="admin-page-header">
+          <h2>Products</h2>
+          <button class="btn btn-primary btn-sm" id="btn-add-product">+ Add Product</button>
+        </div>
+
+        <!-- Product Form Modal -->
+        <div class="modal hidden" id="product-modal">
+          <div class="modal-overlay" id="product-modal-overlay"></div>
+          <div class="modal-box">
+            <div class="modal-header">
+              <h3 id="product-modal-title">Add Product</h3>
+              <button class="modal-close" id="product-modal-close">✕</button>
+            </div>
+            <form id="product-form" class="modal-form">
+              <input type="hidden" id="pf-id" />
+              <div class="form-row">
+                <div class="form-group"><label>Product Name *</label><input type="text" id="pf-name-input" required /></div>
+                <div class="form-group">
+                  <label>Category *</label>
+                  <select id="pf-category" required>
+                    <option value="">Select…</option>
+                    <option value="men">Men</option>
+                    <option value="women">Women</option>
+                    <option value="kids">Kids</option>
+                    <option value="accessories">Accessories</option>
+                    <option value="sale">Sale</option>
+                  </select>
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="form-group"><label>Price (₹) *</label><input type="number" id="pf-price" min="0" step="0.01" required /></div>
+                <div class="form-group"><label>Original Price (₹)</label><input type="number" id="pf-original-price" min="0" step="0.01" /></div>
+              </div>
+              <div class="form-group"><label>Description</label><textarea id="pf-description" rows="3"></textarea></div>
+              <div class="form-group"><label>Image URL *</label><input type="url" id="pf-image" placeholder="https://…" required /></div>
+              <div class="form-row">
+                <div class="form-group"><label>Stock Quantity *</label><input type="number" id="pf-stock" min="0" required /></div>
+                <div class="form-group"><label>Rating (0–5)</label><input type="number" id="pf-rating" min="0" max="5" step="0.1" value="4.0" /></div>
+              </div>
+              <div class="form-group">
+                <label>Available Sizes (comma-separated)</label>
+                <input type="text" id="pf-sizes" placeholder="XS, S, M, L, XL, XXL" />
+              </div>
+              <div class="form-group">
+                <label><input type="checkbox" id="pf-featured" /> Featured Product</label>
+              </div>
+              <div class="modal-actions">
+                <button type="button" class="btn btn-ghost" id="product-form-cancel">Cancel</button>
+                <button type="submit" class="btn btn-primary" id="product-form-submit">Save Product</button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <div class="table-wrap">
+          <table class="data-table" id="admin-products-table">
+            <thead><tr><th>Image</th><th>Name</th><th>Category</th><th>Price</th><th>Stock</th><th>Actions</th></tr></thead>
+            <tbody id="admin-products-body"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ORDERS MANAGEMENT -->
+      <div id="admin-page-orders" class="admin-page hidden">
+        <div class="admin-page-header">
+          <h2>Orders</h2>
+          <select id="orders-filter" class="select-input">
+            <option value="all">All Orders</option>
+            <option value="pending">Pending</option>
+            <option value="processing">Processing</option>
+            <option value="shipped">Shipped</option>
+            <option value="delivered">Delivered</option>
+            <option value="cancelled">Cancelled</option>
+          </select>
+        </div>
+        <div class="table-wrap">
+          <table class="data-table">
+            <thead><tr><th>Order ID</th><th>Customer</th><th>Items</th><th>Total</th><th>Status</th><th>Date</th><th>Update</th></tr></thead>
+            <tbody id="admin-orders-body"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- USERS MANAGEMENT -->
+      <div id="admin-page-users" class="admin-page hidden">
+        <div class="admin-page-header">
+          <h2>Users</h2>
+        </div>
+        <div class="table-wrap">
+          <table class="data-table">
+            <thead><tr><th>Name</th><th>Email</th><th>Joined</th><th>Orders</th><th>Status</th><th>Actions</th></tr></thead>
+            <tbody id="admin-users-body"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- SETTINGS (Footer / Store Info) -->
+      <div id="admin-page-settings" class="admin-page hidden">
+        <div class="admin-page-header">
+          <h2>Store Settings</h2>
+          <p class="page-subtitle">Edits here update the live footer instantly via Realtime Database.</p>
+        </div>
+        <form id="settings-form" class="settings-form">
+          <div class="settings-card">
+            <h3>Shop Information</h3>
+            <div class="form-group"><label>Shop Name</label><input type="text" id="st-shop-name" /></div>
+            <div class="form-group"><label>Tagline</label><input type="text" id="st-tagline" /></div>
+            <div class="form-group"><label>Copyright Text</label><input type="text" id="st-copyright" /></div>
+          </div>
+          <div class="settings-card">
+            <h3>Contact Information</h3>
+            <div class="form-group"><label>Address</label><input type="text" id="st-address" /></div>
+            <div class="form-group"><label>Phone</label><input type="tel" id="st-phone" /></div>
+            <div class="form-group"><label>Email</label><input type="email" id="st-email" /></div>
+          </div>
+          <button type="submit" class="btn btn-primary">Save Settings</button>
+        </form>
+      </div>
+
+    </main>
+  </div>
+</div><!-- /admin-app -->
+
+<!-- Product Detail Modal Template (rendered dynamically) -->
+<template id="product-card-template">
+  <div class="product-card">
+    <div class="product-card-img-wrap">
+      <img class="product-card-img" src="" alt="" loading="lazy" />
+      <button class="wishlist-btn" aria-label="Add to wishlist">♡</button>
+      <span class="product-badge hidden"></span>
+    </div>
+    <div class="product-card-body">
+      <div class="product-meta">
+        <span class="product-category"></span>
+        <span class="product-rating">★ <span class="rating-value"></span></span>
+      </div>
+      <h4 class="product-name"></h4>
+      <div class="product-price-row">
+        <span class="product-price"></span>
+        <span class="product-original-price hidden"></span>
+      </div>
+      <button class="btn btn-primary btn-sm btn-full add-to-cart-btn">Add to Cart</button>
+    </div>
+  </div>
+</template>
+
+<script type="module" src="app.js"></script>
+</body>
+</html>
